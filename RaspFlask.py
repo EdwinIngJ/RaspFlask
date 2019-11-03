@@ -165,7 +165,7 @@ def update_status(item, status):
 import datetime, json
 
 #Var for buttons
-TAW_status = ""
+AW_status = ""
 MW_status = ""
 
 #Getting Info for website
@@ -178,7 +178,7 @@ def get_info():
         "Plant4": status_of_plant4,
         "Tank": status_of_tank,
         #For Buttons
-        "TAW": TAW_status,
+        "AW": AW_status,
         "MW": MW_status,
     }
     return template
@@ -196,7 +196,7 @@ def home():
 
 @app.route("/auto", methods=["POST"])
 def auto():
-    global TAW_status
+    global AW_status
     global MW_status
     global t1
     global t2
@@ -207,13 +207,17 @@ def auto():
     
     
     if data == "auto_checked":
-        TAW_status = "checked"
-        #Possible add a check in a future version
-        t1.start()
+        AW_status = "checked"
+        try:
+            t2.raise_exception()
+            t2.join()
+            t2 = thread_with_exception('Manual_Watering')
+        finally:
+            t1.start()
         #printlog("Starting Auto")
         
     elif data == "auto_unchecked":
-        TAW_status = ""
+        AW_status = ""
         t1.raise_exception()
         t1.join()
         printlog("Not Running Auto")
@@ -262,4 +266,4 @@ if __name__ == "__main__":
         printlog("Cleaning Up Pins")
         GPIO.cleanup()
         
-# Include:write date to file to make graph/fix watering status with autoloop
+# Include:write date to file to make graph/adding checks for thread before starting thread in auto func
