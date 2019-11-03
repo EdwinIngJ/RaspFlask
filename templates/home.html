@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--Required meta tags-->
+    <meta charset="=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+    <title>Welcome to DDWaterSystems</title>
+
+</head>
+
+<body>
+
+    <header class="site-header">
+        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+            <a class="navbar-brand mr-4" href="/">
+                <img src="{{url_for('static', filename='logo.png')}}" width="30" height="30"
+                    class="d-inline-block align-top" alt="Logo">
+                DripDropWaterSystems
+            </a>
+        </nav>
+    </header>
+
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <!--show flash messages-->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{category}}">
+                    {{message}}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+        <div class="alert alert-light" role="alert">
+            Last Updated: {{pi_info.last_updated}}
+        </div>
+        <h5><u>Status</u></h5>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    Plant 1: {{pi_info.Plant1}}
+                </div>
+               	<div class="col">
+                    Plant 2: {{pi_info.Plant2}}
+                </div>
+               	<div class="col">
+                    Plant 3: {{pi_info.Plant3}}
+                </div>
+               	<div class="col">
+                    Plant 4: {{pi_info.Plant4}}
+                </div>
+                <div class="col">
+                    Tank: {{pi_info.Tank}}
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Toggle Auto Watering</h5><br>
+                    <label class=" switch">
+                        <input type="checkbox" id='TAW' {{pi_info.TAW}}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="col-md-4 ml-auto">
+                    <h5>Manually Water</h5><br>
+                    <label class="switch">
+                        <input type="checkbox" id='MW' {{pi_info.MW}}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" crossorigin="anonymous"></script>
+    <script>
+        $("#TAW").on('change', function () {
+            if ($(this).is(':checked')) {
+                $.ajax({
+                    url: "{{url_for('auto')}}",
+                    data: 'auto_checked',
+                    type: 'POST',
+                    success: function (response) {
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        console.log(error)
+                    }
+                })
+
+            }
+            else {
+                $.ajax({
+                    url: "{{url_for('auto')}}",
+                    data: 'auto_unchecked',
+                    type: 'POST',
+                    success: function (response) {
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        console.log(error)
+                    }
+                })
+            }
+        });</script>
+    <script>
+        var switchStatus = false;
+        $("#MW").on('change', function () {
+            if ($(this).is(':checked')) {
+                $.ajax({
+                    url: "{{url_for('auto')}}",
+                    data: 'manual_checked',
+                    type: 'POST',
+                    success: function (response) {
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        console.log(error)
+                    }
+                })
+
+            }
+            else {
+                $.ajax({
+                    url: "{{url_for('auto')}}",
+                    data: 'manual_unchecked',
+                    type: 'POST',
+                    success: function (response) {
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        console.log(error)
+                    }
+                })
+
+            }
+        });</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
