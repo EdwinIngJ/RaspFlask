@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 # encoding: utf-8
+#LOGGER
+LOGGER = True
+def printlog(text):
+    if(LOGGER):
+        print(text)
+
 import threading
 import ctypes
 import time
@@ -55,7 +61,10 @@ GPIO.output(Output_TSensor, GPIO.HIGH)
 p_sensors = (Input_P1Sensor,Input_P2Sensor,Input_P3Sensor,Input_P4Sensor)
 
 #Default Status of Water System
-status_of_plants = ["Not Watering","Not Watering","Not Watering","Not Watering"]
+status_of_plant1 = "Not Watering"
+status_of_plant2 = "Not Watering"
+status_of_plant3 = "Not Watering"
+status_of_plant4 = "Not Watering"
 status_of_tank = "Full"
 
 #Thread for running Water System
@@ -66,48 +75,42 @@ class thread_with_exception(threading.Thread):
         self.name = name
     
     def run(self):
-        global status_of_plants
-        global status_of_tank
         try:
             if self.name == "Manual_Watering":
-                print("Watering Manually")
-                i = 0
-                for m in motors:
-                    status_of_plants[i] = "Watering"
+                printlog("Watering Manually")
+                for counter, m in enumerate(motors,1):
+                    update_status(counter,"Watering")
                     m.forward(100)
                     time.sleep(1.5)
                     m.stop()
-                    status_of_plants[i] = "Not Watering"
-                    i += 1
+                    update_status(counter,"Not Watering")
                 
             elif self.name == "Auto_Watering":
-                print("Watering Automatically")
+                printlog("Watering Automatically")
                 while True:
-                    m = 0
-                    for p_sensor in p_sensors:
+                    for counter, p_sensor in enumerate(p_sensors,1):
                         if GPIO.input(p_sensor):
-                            print("Watering Plant:", m+1)
-                            status_of_plants[m] = 'Watering'
-                            motors[m].forward(100)
+                            printlog("Watering Plant:" + str(counter))
+                            update_status(counter,"Watering")
+                            motors[counter-1].forward(100)
                         else:
-                            print("Not Watering Plant:",m+1)
-                            status_of_plants[m] = 'Not Watering'
-                            motors[m].stop()
-                        m += 1
+                            printlog("Not Watering Plant:" + str(counter))
+                            update_status(counter,"Not Watering")
+                            motors[counter-1].stop()
 
                     if GPIO.input(Input_TSensor):
-                        print("Tank is Empty. Adding water.")
-                        status_of_tank = 'Empty'
+                        printlog("Tank is Empty. Adding water.")
+                        update_status(5,"Empty")
 
                     else:
-                        print("Tank Full")
-                        status_of_tank = 'Full'
+                        printlog("Tank Full")
+                        update_status(5,"Full")
                     
                     #Sleeps for one second before looping again
                     time.sleep(1)
         finally:
             
-            print("Thread ended")
+            printlog("Thread ended")
             
     def get_id(self):
         if hasattr(self, '_thread_id'):
@@ -117,11 +120,10 @@ class thread_with_exception(threading.Thread):
                 return id
         
     def raise_exception(self):
-        global status_of_plants
         #Stops motors once exception is raised
         for m in motors:
             m.stop()
-        status_of_plants = "Not Watering"
+        update_status(0,0)
         
         #Stops thread
         thread_id = self.get_id()
@@ -136,11 +138,28 @@ t1  = thread_with_exception('Auto_Watering')
 t2 = thread_with_exception('Manual_Watering')
 #----------------------------------------------------------------------------------
 
-#LOGGER
-LOGGER = True
-def printlog(text):
-    if(LOGGER):
-        print(text)
+def update_status(item, status):
+    global status_of_plant1
+    global status_of_plant2
+    global status_of_plant3
+    global status_of_plant4
+    global status_of_tank
+    if item == 1:
+        status_of_plant1 = status
+    elif item == 2:
+        status_of_plant2 = status
+    elif item == 3:
+        status_of_plant3 = status
+    elif item == 4:
+        status_of_plant4 = status
+    elif item == 5:
+        status_of_tank = status
+    elif item == 0:
+        status_of_plant1 = "Not Watering"
+        status_of_plant2 = "Not Watering"
+        status_of_plant3 = "Not Watering"
+        status_of_plant4 = "Not Watering"
+        status_of_tank = "Full"        
 
 #Server-Code
 import datetime, json
@@ -153,10 +172,10 @@ MW_status = ""
 def get_info():
     template = {
         "last_updated": datetime.datetime.now(),
-        "Plant1": status_of_plants[0],
-        "Plant2": status_of_plants[1],
-        "Plant3": status_of_plants[2],
-        "Plant4": status_of_plants[3],
+        "Plant1": status_of_plant1,
+        "Plant2": status_of_plant2,
+        "Plant3": status_of_plant3,
+        "Plant4": status_of_plant4,
         "Tank": status_of_tank,
         #For Buttons
         "TAW": TAW_status,
@@ -191,30 +210,48 @@ def auto():
         TAW_status = "checked"
         #Possible add a check in a future version
         t1.start()
-        printlog("Starting Auto")
+        #printlog("Starting Auto")
+        
     elif data == "auto_unchecked":
         TAW_status = ""
         t1.raise_exception()
         t1.join()
         printlog("Not Running Auto")
+        #Resetting Thread
         t1 = thread_with_exception('Auto_Watering')
+        
     elif data == "manual_checked":
         MW_status = "checked"
+        
+        #Checks is Auto is Running
         try:
             t1.raise_exception()
+            t1.join()
+            t1  = thread_with_exception('Auto_Watering')
             t2.start()
             t2.join()
-            t1  = thread_with_exception('Auto_Watering')
-            t1.start()
-        except:
-            print("Check:Auto_Watering Not Running")
             t2  = thread_with_exception('Manual_Watering')
+            t1.start()
+            
+        except:
+            printlog("Check: Auto_Watering Not Running")
             t2.start()
+            t2.join()
+            t2  = thread_with_exception('Manual_Watering')
+            
         MW_status = ""
+        
     elif data == "manual_unchecked":
         MW_status = ""
+        try:
+            t2.raise_exception()
+            t2 = thread_with_exception('Manual_Watering')
+        except:
+            printlog("Manual Not Running")
+        
     else:
         status = "Cannot read data"
+        
     return json.dumps({"status": status})
 
 
