@@ -73,7 +73,7 @@
                 <div class="col-md-4">
                     <h5>Toggle Auto Watering</h5><br>
                     <label class=" switch">
-                        <input type="checkbox" id='TAW' {{pi_info.TAW}}>
+                        <input type="checkbox" id='AW' {{pi_info.AW}}>
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -92,7 +92,7 @@
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" crossorigin="anonymous"></script>
     <script>
-        $("#TAW").on('change', function () {
+        $("#AW").on('change', function () {
             if ($(this).is(':checked')) {
                 $.ajax({
                     url: "{{url_for('auto')}}",
