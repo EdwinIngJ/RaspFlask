@@ -4,7 +4,7 @@ Watering System on Raspberry Pi
 **`Documentation`** |
 ------------------- |
 
-##Install
+## Install
 ```
 $git clone https://github.com/EdwinIngJ/RaspFlask.git
 ```
