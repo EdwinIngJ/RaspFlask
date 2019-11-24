@@ -1,9 +1,22 @@
 # RaspFlask
 Watering System on Raspberry Pi
 
-#Create Virtual Env in Program File Directory
-python -m venv env
-$source ./env/bin/activate
-pip install flask, flask-socketio, RPi.GPIO
-deactivate
-$sudo ./env/bin/python RaspFlask.py
+**`Documentation`** |
+------------------- |
+
+##Install
+```
+$git clone https://github.com/EdwinIngJ/RaspFlask.git
+```
+
+#### Setting up Environment in Program Directory
+```bash
+$ python -m venv env
+$ source ./env/bin/activate
+$ pip install flask, flask-socketio, RPi.GPIO
+$ deactivate
+```
+#### Running RaspFlask
+```bash
+$ sudo ./env/bin/python RaspFlask.py
+```
