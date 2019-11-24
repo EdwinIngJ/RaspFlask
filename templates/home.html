@@ -6,10 +6,14 @@
     <meta charset="=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+        integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
+    <!-- Custom CSS File-->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
 
     <title>Welcome to DDWaterSystems</title>
@@ -45,25 +49,26 @@
             </div>
         </div>
         <div class="alert alert-light" role="alert">
-            Last Updated: {{pi_info.last_updated}}
+            <div id="LastUpdated">
+            </div>
         </div>
         <h5><u>Status</u></h5>
         <div class="container">
             <div class="row">
                 <div class="col">
-                    Plant 1: {{pi_info.Plant1}}
-                </div>
-               	<div class="col">
-                    Plant 2: {{pi_info.Plant2}}
-                </div>
-               	<div class="col">
-                    Plant 3: {{pi_info.Plant3}}
-                </div>
-               	<div class="col">
-                    Plant 4: {{pi_info.Plant4}}
+                    <div id="Plant1Status">Plant 1: awaiting...</div>
                 </div>
                 <div class="col">
-                    Tank: {{pi_info.Tank}}
+                    <div id="Plant2Status">Plant 2: awaiting...</div>
+                </div>
+                <div class="col">
+                    <div id="Plant3Status">Plant 3: awaiting...</div>
+                </div>
+                <div class="col">
+                    <div id="Plant4Status">Plant 4: awaiting...</div>
+                </div>
+                <div class="col">
+                    <div id="TankStatus">Tank: awaiting...</div>
                 </div>
             </div>
         </div>
@@ -72,93 +77,24 @@
             <div class="row">
                 <div class="col-md-4">
                     <h5>Toggle Auto Watering</h5><br>
-                    <label class=" switch">
-                        <input type="checkbox" id='AW' {{pi_info.AW}}>
-                        <span class="slider"></span>
-                    </label>
+                        <label class=" switch">
+                            <input type="checkbox" id='AW'>
+                            <span class="slider"></span>
+                        </label>
                 </div>
                 <div class="col-md-4 ml-auto">
                     <h5>Manually Water</h5><br>
-                    <label class="switch">
-                        <input type="checkbox" id='MW' {{pi_info.MW}}>
-                        <span class="slider"></span>
-                    </label>
+                        <label class="switch">
+                            <input type="checkbox" id='MW'>
+                            <span class="slider"></span>
+                    	</label>
                 </div>
             </div>
         </div>
-    </main>
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" crossorigin="anonymous"></script>
-    <script>
-        $("#AW").on('change', function () {
-            if ($(this).is(':checked')) {
-                $.ajax({
-                    url: "{{url_for('auto')}}",
-                    data: 'auto_checked',
-                    type: 'POST',
-                    success: function (response) {
-                        console.log(response);
-                    },
-                    error: function (error) {
-                        console.log(error)
-                    }
-                })
-
-            }
-            else {
-                $.ajax({
-                    url: "{{url_for('auto')}}",
-                    data: 'auto_unchecked',
-                    type: 'POST',
-                    success: function (response) {
-                        console.log(response);
-                    },
-                    error: function (error) {
-                        console.log(error)
-                    }
-                })
-            }
-        });</script>
-    <script>
-        var switchStatus = false;
-        $("#MW").on('change', function () {
-            if ($(this).is(':checked')) {
-                $.ajax({
-                    url: "{{url_for('auto')}}",
-                    data: 'manual_checked',
-                    type: 'POST',
-                    success: function (response) {
-                        console.log(response);
-                    },
-                    error: function (error) {
-                        console.log(error)
-                    }
-                })
-
-            }
-            else {
-                $.ajax({
-                    url: "{{url_for('auto')}}",
-                    data: 'manual_unchecked',
-                    type: 'POST',
-                    success: function (response) {
-                        console.log(response);
-                    },
-                    error: function (error) {
-                        console.log(error)
-                    }
-                })
-
-            }
-        });</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
+    </main>   
 </body>
-
+<!-- jQuery first, then Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='app9.js') }}"></script>
 </html>
