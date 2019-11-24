@@ -6,7 +6,7 @@ Watering System on Raspberry Pi
 
 ## Install
 ```
-$git clone https://github.com/EdwinIngJ/RaspFlask.git
+$ git clone https://github.com/EdwinIngJ/RaspFlask.git
 ```
 
 #### Setting up Environment in Program Directory
