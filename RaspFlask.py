@@ -206,7 +206,7 @@ def buttons_func(data):
     global t2
     status = "Success"
 
-    # Accepts data from user and decodes it
+    # Accepts data from user
     msg = data['data']
 
     if msg == "auto_checked":
@@ -333,23 +333,3 @@ if __name__ == "__main__":
 
 
 # Include:write date to file to make graph/adding checks for thread before starting thread in auto func
-
-"""
-@app.route("/data", method=["GET"])
-def data():
-    return jsonisfy(get_data())
-
-
-@app.route("/updatestatus")
-def updatestatus():
-    ws = request.environ("wsgi.websocket")
-    if not ws:
-        raise RuntimeError("Environment lacks WSGI WebSocket support")
-    if ws:
-        print("Hello")
-
-
-http_server = WSGIServer(("", PORT), app, handler_class=WebSocketHandler)
-http_server.serve_forever()
-"""
-
