@@ -46,35 +46,3 @@ $("#MW").on('change', function () {
       	socket.emit('client', {"data": "manual_unchecked"});
     }
 });
-
-
-/*
-var ws;
-
-function establish_websocket(port) {
-    supportsWS = 'Websocket' in window || 'MozWebSocket' in window;
-    if (supportsWS) {
-        ws = new WebSocket("ws://" + document.domain + ":" + port.toString() + "updatestatus");
-        ws.onstart = function () {
-            ws.send('started');
-        };
-        ws.onmessage = function (evnt) {
-            load_data();
-        };
-        ws.onclose = function (evnt) {
-            $("#update").html('SERVER DISCONNECT');
-            $("#update").css('backgroundColor', '#FFCCFF');
-            $("#update").fadeIn('fast');
-        };
-
-        load_data();
-    } else {
-        alert("WebSocket not supported");
-    }
-}
-
-$(document).ready(function () {
-    $("div#updated").fadeOut(0);
-    $("div#contents").append("awaiting data...");
-});
-*/
